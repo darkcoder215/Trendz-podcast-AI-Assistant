@@ -27,11 +27,19 @@ type Citation = {
   timestamp: string;
   youtubeUrl: string;
   quoteAr: string;
+  highlightAr: string | null;
 };
 
 type Message =
   | { role: 'user'; text: string }
-  | { role: 'assistant'; text: string; citations: Citation[]; answerId: string };
+  | {
+      role: 'assistant';
+      text: string;
+      citations: Citation[];
+      answerId: string;
+      status: 'answered' | 'refused';
+      refusalReason?: string;
+    };
 
 export function AskClient({
   initialQuery,
@@ -97,6 +105,20 @@ export function AskClient({
         if (res.status === 429) {
           setError(body.reason ?? 'تم تجاوز الحد المسموح به.');
           if (body.error === 'quota_exceeded') setQuotaLeft(0);
+        } else if (res.status === 400 && body.error === 'refused') {
+          // Guardrail pre-filter refused the question (hate/sexual/injection).
+          // Render it inline as an assistant refusal so the user sees context.
+          setMessages((m) => [
+            ...m,
+            {
+              role: 'assistant',
+              text: body.reason ?? 'لا أستطيع الإجابة على هذا السؤال.',
+              citations: [],
+              answerId: 'refused-' + Date.now(),
+              status: 'refused',
+              refusalReason: body.reason,
+            },
+          ]);
         } else {
           setError('حدث خطأٌ أثناء توليد الإجابة. حاول مرة أخرى.');
         }
@@ -112,11 +134,14 @@ export function AskClient({
           text: data.text,
           citations: data.citations ?? [],
           answerId: data.answerId,
+          status: data.status === 'refused' ? 'refused' : 'answered',
+          refusalReason: data.refusalReason,
         },
       ]);
       setQuotaLeft((q0) => Math.max(0, q0 - 1));
       setLoading(null);
-      if (!captured) setShowCapture(true);
+      // Only prompt for name/email after a real answered question.
+      if (!captured && data.status !== 'refused') setShowCapture(true);
     } catch (e) {
       clearTimeout(t1);
       clearTimeout(t2);
@@ -187,6 +212,7 @@ export function AskClient({
                 answer={m.text}
                 citations={m.citations}
                 answerId={m.answerId}
+                status={m.status}
               />
             ),
           )}
@@ -441,14 +467,39 @@ function stripCitationMarkers(text: string) {
   return text.replace(/\s*\[ep:\d+@\d{1,2}:\d{2}\]/g, '');
 }
 
+function renderHighlighted(text: string, highlight: string | null) {
+  if (!highlight) return text;
+  const idx = text.indexOf(highlight);
+  if (idx < 0) return text;
+  return (
+    <>
+      {text.slice(0, idx)}
+      <mark
+        style={{
+          background: 'var(--accent-4)',
+          color: 'var(--fg-strong)',
+          padding: '1px 4px',
+          borderRadius: 4,
+          fontWeight: 900,
+        }}
+      >
+        {text.slice(idx, idx + highlight.length)}
+      </mark>
+      {text.slice(idx + highlight.length)}
+    </>
+  );
+}
+
 function AssistantMsg({
   answer,
   citations,
   answerId,
+  status,
 }: {
   answer: string;
   citations: Citation[];
   answerId: string;
+  status: 'answered' | 'refused';
 }) {
   const [displayed, setDisplayed] = useState('');
   const clean = stripCitationMarkers(answer);
@@ -487,14 +538,16 @@ function AssistantMsg({
         <div
           style={{
             fontSize: 12,
-            color: 'var(--accent-2)',
+            color: status === 'refused' ? 'var(--accent-2)' : 'var(--accent-2)',
             fontWeight: 900,
             marginBottom: 12,
             letterSpacing: '.05em',
             textTransform: 'uppercase',
           }}
         >
-          MADRASA AI · استخلصتُ الإجابة من {citations.length} مقاطع
+          {status === 'refused'
+            ? 'MADRASA AI · رفض الإجابة'
+            : `MADRASA AI · استخلصتُ الإجابة من ${citations.length} مقاطع`}
         </div>
         <div style={{ fontSize: 16, fontWeight: 600, lineHeight: 1.95, color: 'var(--fg-strong)' }}>
           {paragraphs.map((p, i) => (
@@ -516,7 +569,7 @@ function AssistantMsg({
             </p>
           ))}
         </div>
-        {done && citations.length > 0 && (
+        {done && status === 'answered' && citations.length > 0 && (
           <>
             <div
               style={{
@@ -537,7 +590,7 @@ function AssistantMsg({
                   textTransform: 'uppercase',
                 }}
               >
-                📎 المصادر · اضغط لتفتح اللحظة على يوتيوب
+                📎 المصادر · الجزء المُلوَّن هو ما استند إليه الجواب
               </div>
               <div style={{ display: 'grid', gap: 10 }}>
                 {citations.map((c) => (
@@ -585,7 +638,9 @@ function AssistantMsg({
                     >
                       {Ico.play} ح{c.episodeNum} · {c.timestamp}
                     </div>
-                    <div style={{ fontSize: 14, fontWeight: 600, lineHeight: 1.7, fontStyle: 'italic' }}>«{c.quoteAr}»</div>
+                    <div style={{ fontSize: 14, fontWeight: 600, lineHeight: 1.75, fontStyle: 'italic' }}>
+                      «{renderHighlighted(c.quoteAr, c.highlightAr)}»
+                    </div>
                   </a>
                 ))}
               </div>

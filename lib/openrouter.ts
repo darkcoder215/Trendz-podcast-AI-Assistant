@@ -19,14 +19,16 @@ export async function chatCompletion(opts: {
   temperature?: number;
   maxTokens?: number;
   model?: string;
+  jsonMode?: boolean;
 }): Promise<{ text: string; model: string }> {
-  const body = {
+  const body: Record<string, unknown> = {
     model: opts.model ?? env.CHAT_MODEL(),
     messages: opts.messages,
     temperature: opts.temperature ?? 0.2,
     max_tokens: opts.maxTokens ?? 1200,
     stream: false,
   };
+  if (opts.jsonMode) body.response_format = { type: 'json_object' };
   const res = await fetch(`${OPENROUTER_URL}/chat/completions`, {
     method: 'POST',
     headers: headers(),
