@@ -1,0 +1,248 @@
+/* ==========================================================
+   TRENDZ / Madrasa AI — Design Tokens
+   ========================================================== */
+
+@font-face { font-family: 'Mont'; src: url('../fonts/Mont-Book.ttf') format('truetype'); font-weight: 300; font-display: swap; }
+@font-face { font-family: 'Mont'; src: url('../fonts/Mont-Regular.ttf') format('truetype'); font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Mont'; src: url('../fonts/Mont-SemiBold.ttf') format('truetype'); font-weight: 600; font-display: swap; }
+@font-face { font-family: 'Mont'; src: url('../fonts/Mont-Bold.ttf') format('truetype'); font-weight: 700; font-display: swap; }
+@font-face { font-family: 'Mont'; src: url('../fonts/Mont-Heavy.ttf') format('truetype'); font-weight: 900; font-display: swap; }
+
+@font-face { font-family: 'IBM Plex Sans Arabic'; src: url('../fonts/IBMPlexSansArabic-Regular.ttf') format('truetype'); font-weight: 400; font-display: swap; }
+@font-face { font-family: 'IBM Plex Sans Arabic'; src: url('../fonts/IBMPlexSansArabic-SemiBold.ttf') format('truetype'); font-weight: 600; font-display: swap; }
+@font-face { font-family: 'IBM Plex Sans Arabic'; src: url('../fonts/IBMPlexSansArabic-Bold.ttf') format('truetype'); font-weight: 700; font-display: swap; }
+
+:root {
+  /* === PRIMARY BRAND === */
+  --delft-blue: #273773;
+  --delft-blue-75: #5d6a99;
+  --delft-blue-50: #939cb9;
+  --delft-blue-20: #d4d7e3;
+
+  --tiffany: #8bd8bd;
+  --tiffany-75: #a8e1cc;
+  --tiffany-50: #c5ebdf;
+  --tiffany-20: #e8f7f1;
+
+  /* === SECONDARY === */
+  --sienna: #f96e46;
+  --sienna-75: #fa8c6b;
+  --sienna-50: #fcb7a3;
+  --sienna-20: #fee2d9;
+
+  --saffron: #efc846;
+  --saffron-75: #f3d470;
+  --saffron-50: #f7e2a3;
+  --saffron-20: #fdf4d9;
+
+  --rose: #ffe3e3;
+  --rose-75: #ffeaea;
+  --rose-50: #fff1f1;
+  --rose-20: #fff9f9;
+
+  --slate-grey: #333333;
+  --dim-grey: #666666;
+  --dark-grey: #999999;
+  --light-grey: #e5e7eb;
+  --mist: #f5f6f8;
+
+  /* === SEMANTIC — LIGHT (default) === */
+  --bg: #faf7f2;             /* warm cream background */
+  --bg-alt: #ffffff;
+  --surface: #ffffff;
+  --surface-alt: #f3efe7;
+  --surface-raised: #ffffff;
+  --border: #e6e0d3;
+  --border-strong: #273773;
+  --fg: #0f1631;             /* near-black-blue */
+  --fg-strong: #000000;
+  --fg-muted: #4a5375;
+  --fg-on-surface: #0f1631;
+  --accent: #273773;         /* Delft blue = primary accent on light */
+  --accent-ink: #ffffff;     /* text ON accent */
+  --accent-2: #f96e46;
+  --accent-3: #8bd8bd;
+  --accent-4: #efc846;
+  --chip-bg: #273773;
+  --chip-fg: #ffffff;
+
+  /* === TYPE === */
+  --font-en: 'Mont', 'Helvetica Neue', system-ui, sans-serif;
+  --font-ar: 'IBM Plex Sans Arabic', 'Noto Sans Arabic', sans-serif;
+
+  /* BOLD-FIRST weight scale — everything is heavy */
+  --w-body: 600;
+  --w-strong: 700;
+  --w-heading: 900;
+  --w-hero: 900;
+
+  /* === RADII === */
+  --r-xs: 4px;
+  --r-sm: 8px;
+  --r-md: 14px;
+  --r-lg: 22px;
+  --r-xl: 32px;
+  --r-pill: 999px;
+
+  /* === SHADOWS === */
+  --sh-1: 0 1px 2px rgba(15,22,49,0.06), 0 1px 3px rgba(15,22,49,0.08);
+  --sh-2: 0 4px 14px rgba(15,22,49,0.08), 0 2px 4px rgba(15,22,49,0.06);
+  --sh-3: 0 18px 44px rgba(15,22,49,0.10), 0 6px 14px rgba(15,22,49,0.06);
+  --sh-glow: 0 0 0 4px rgba(39,55,115,0.18);
+  --sh-brutal: 6px 6px 0 #0f1631;
+
+  /* === SPACE === */
+  --s-1: 4px;  --s-2: 8px;  --s-3: 12px; --s-4: 16px;
+  --s-5: 24px; --s-6: 32px; --s-7: 48px; --s-8: 64px; --s-9: 96px; --s-10: 128px;
+}
+
+/* === LIGHT THEME (explicit) === */
+[data-theme="light"] {
+  --bg: #faf7f2;
+  --bg-alt: #ffffff;
+  --surface: #ffffff;
+  --surface-alt: #f3efe7;
+  --surface-raised: #ffffff;
+  --border: #e6e0d3;
+  --border-strong: #273773;
+  --fg: #0f1631;
+  --fg-strong: #000000;
+  --fg-muted: #4a5375;
+  --fg-on-surface: #0f1631;
+  --accent: #273773;
+  --accent-ink: #ffffff;
+  --accent-2: #f96e46;
+  --accent-3: #8bd8bd;
+  --accent-4: #efc846;
+  --chip-bg: #273773;
+  --chip-fg: #ffffff;
+  --sh-1: 0 1px 2px rgba(15,22,49,0.06), 0 1px 3px rgba(15,22,49,0.08);
+  --sh-2: 0 4px 14px rgba(15,22,49,0.08), 0 2px 4px rgba(15,22,49,0.06);
+  --sh-3: 0 18px 44px rgba(15,22,49,0.10), 0 6px 14px rgba(15,22,49,0.06);
+  --sh-brutal: 6px 6px 0 #0f1631;
+}
+
+/* === DARK THEME === */
+[data-theme="dark"] {
+  --bg: #0b1230;
+  --bg-alt: #0f1631;
+  --surface: #182048;
+  --surface-alt: #0f1631;
+  --surface-raised: #1d2750;
+  --border: #2a3563;
+  --border-strong: #8bd8bd;
+  --fg: #ffffff;
+  --fg-strong: #ffffff;
+  --fg-muted: rgba(255,255,255,0.72);
+  --fg-on-surface: #ffffff;
+  --accent: #8bd8bd;
+  --accent-ink: #0b1230;
+  --accent-2: #f96e46;
+  --accent-3: #8bd8bd;
+  --accent-4: #efc846;
+  --chip-bg: #8bd8bd;
+  --chip-fg: #0b1230;
+  --sh-1: 0 1px 2px rgba(0,0,0,0.3), 0 1px 3px rgba(0,0,0,0.4);
+  --sh-2: 0 4px 14px rgba(0,0,0,0.35), 0 2px 4px rgba(0,0,0,0.25);
+  --sh-3: 0 18px 44px rgba(0,0,0,0.45), 0 6px 14px rgba(0,0,0,0.3);
+  --sh-brutal: 6px 6px 0 #8bd8bd;
+}
+
+/* Legacy theme aliases — still supported for Design System palette demos */
+[data-theme="classic"] {
+  --bg: #273773; --bg-alt: #1d2a5a;
+  --surface: #1d2a5a; --surface-alt: #20305f; --surface-raised: #2a3a7a;
+  --border: rgba(255,255,255,0.15); --border-strong: #8bd8bd;
+  --accent: #8bd8bd; --accent-ink: #0b1230; --accent-2: #f96e46; --accent-3: #8bd8bd; --accent-4: #efc846;
+  --fg: #ffffff; --fg-strong: #ffffff; --fg-muted: rgba(255,255,255,0.72); --fg-on-surface: #ffffff;
+  --chip-bg: #8bd8bd; --chip-fg: #273773;
+}
+[data-theme="mint"] {
+  --bg: #8bd8bd; --bg-alt: #7accb0;
+  --surface: #ffffff; --surface-alt: #e8f7f1; --surface-raised: #ffffff;
+  --border: rgba(39,55,115,0.15); --border-strong: #273773;
+  --accent: #273773; --accent-ink: #ffffff; --accent-2: #f96e46; --accent-3: #efc846; --accent-4: #efc846;
+  --fg: #273773; --fg-strong: #0f1631; --fg-muted: rgba(39,55,115,0.75); --fg-on-surface: #273773;
+  --chip-bg: #273773; --chip-fg: #ffffff;
+}
+[data-theme="sienna"] {
+  --bg: #f96e46; --bg-alt: #e8623c;
+  --surface: #ffffff; --surface-alt: #fee2d9; --surface-raised: #ffffff;
+  --border: rgba(39,55,115,0.15); --border-strong: #273773;
+  --accent: #273773; --accent-ink: #ffffff; --accent-2: #ffe3e3; --accent-3: #efc846; --accent-4: #8bd8bd;
+  --fg: #ffffff; --fg-strong: #ffffff; --fg-muted: rgba(255,255,255,0.85); --fg-on-surface: #273773;
+  --chip-bg: #273773; --chip-fg: #ffffff;
+}
+[data-theme="saffron"] {
+  --bg: #efc846; --bg-alt: #dfb72e;
+  --surface: #ffffff; --surface-alt: #fdf4d9; --surface-raised: #ffffff;
+  --border: rgba(39,55,115,0.15); --border-strong: #273773;
+  --accent: #273773; --accent-ink: #ffffff; --accent-2: #f96e46; --accent-3: #8bd8bd; --accent-4: #ffe3e3;
+  --fg: #273773; --fg-strong: #0f1631; --fg-muted: rgba(39,55,115,0.78); --fg-on-surface: #273773;
+  --chip-bg: #273773; --chip-fg: #ffffff;
+}
+[data-theme="ink"] {
+  --bg: #0b1230; --bg-alt: #0f1631;
+  --surface: #182048; --surface-alt: #0f1631; --surface-raised: #1d2750;
+  --border: #2a3563; --border-strong: #8bd8bd;
+  --accent: #8bd8bd; --accent-ink: #0b1230; --accent-2: #f96e46; --accent-3: #8bd8bd; --accent-4: #efc846;
+  --fg: #ffffff; --fg-strong: #ffffff; --fg-muted: rgba(255,255,255,0.72); --fg-on-surface: #ffffff;
+  --chip-bg: #8bd8bd; --chip-fg: #0b1230;
+}
+
+/* === BASE — BOLD FIRST === */
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--font-en);
+  font-weight: var(--w-body);
+  background: var(--bg);
+  color: var(--fg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+h1, h2, h3, h4, h5, h6 { font-weight: var(--w-heading); letter-spacing: -0.02em; color: var(--fg-strong); margin: 0; }
+p, li, span, div, a, button, input, textarea, label { font-weight: var(--w-body); }
+strong, b { font-weight: 900; color: var(--fg-strong); }
+.ar { font-family: var(--font-ar); direction: rtl; font-weight: 700; }
+.ar h1, .ar h2, .ar h3, .ar h4 { font-weight: 700; }
+
+/* scrollbar */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(39,55,115,0.25); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(39,55,115,0.5); }
+[data-theme="dark"] ::-webkit-scrollbar-thumb,
+[data-theme="ink"] ::-webkit-scrollbar-thumb,
+[data-theme="classic"] ::-webkit-scrollbar-thumb { background: rgba(139,216,189,0.35); }
+
+/* === THEME SWITCHER (shared) === */
+.theme-switch {
+  position: fixed; bottom: 24px; right: 24px; z-index: 9000;
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--surface-raised);
+  border: 2px solid var(--border-strong);
+  border-radius: 999px;
+  padding: 6px;
+  box-shadow: var(--sh-3);
+  font-family: var(--font-en);
+}
+.theme-switch button {
+  appearance: none; border: 0; cursor: pointer;
+  background: transparent;
+  color: var(--fg-muted);
+  font-weight: 800; font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase;
+  padding: 10px 18px;
+  border-radius: 999px;
+  display: inline-flex; align-items: center; gap: 8px;
+  transition: all 0.2s ease;
+  font-family: var(--font-en);
+}
+.theme-switch button:hover { color: var(--fg); }
+.theme-switch button[aria-pressed="true"] {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+.theme-switch svg { width: 16px; height: 16px; }
+[dir="rtl"] .theme-switch { right: auto; left: 24px; }
