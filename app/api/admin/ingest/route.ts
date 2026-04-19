@@ -4,6 +4,7 @@ import { supabaseService } from '@/lib/supabase/service';
 import { adminIngestSchema } from '@/lib/schemas';
 import { parseTranscript, packChunks } from '@/lib/chunker';
 import { embed } from '@/lib/openrouter';
+import { getAppSettings } from '@/lib/appSettings';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -51,11 +52,12 @@ export async function POST(req: Request) {
   }
 
   // Embed in batches of 96 (OpenAI default limit).
+  const { embedModel } = await getAppSettings();
   const vectors: number[][] = [];
   for (let i = 0; i < chunks.length; i += 96) {
     const batch = chunks.slice(i, i + 96).map((c) => c.content);
     try {
-      const vecs = await embed(batch);
+      const vecs = await embed(batch, embedModel);
       vectors.push(...vecs);
     } catch (e) {
       return NextResponse.json({ error: 'embed_failed', details: String(e) }, { status: 502 });

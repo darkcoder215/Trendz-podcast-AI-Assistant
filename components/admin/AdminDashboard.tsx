@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { supabaseBrowser } from '@/lib/supabase/browser';
 import { Ico } from '../Icons';
 import { EpisodeUpload } from './EpisodeUpload';
+import { ModelSettings } from './ModelSettings';
 
 type Episode = {
   id: string;
@@ -18,7 +19,7 @@ type Episode = {
 
 export function AdminDashboard({ episodes, adminEmail }: { episodes: Episode[]; adminEmail: string }) {
   const router = useRouter();
-  const [tab, setTab] = useState<'episodes' | 'upload'>('upload');
+  const [tab, setTab] = useState<'episodes' | 'upload' | 'models'>('upload');
 
   async function logout() {
     await supabaseBrowser().auth.signOut();
@@ -103,6 +104,7 @@ export function AdminDashboard({ episodes, adminEmail }: { episodes: Episode[]; 
           [
             ['upload', 'رفع حلقة جديدة'],
             ['episodes', `الحلقات المرفوعة (${episodes.length})`],
+            ['models', 'النماذج'],
           ] as const
         ).map(([id, label]) => (
           <button
@@ -125,7 +127,9 @@ export function AdminDashboard({ episodes, adminEmail }: { episodes: Episode[]; 
         ))}
       </div>
 
-      {tab === 'upload' ? <EpisodeUpload onDone={() => router.refresh()} /> : <EpisodeList episodes={episodes} />}
+      {tab === 'upload' && <EpisodeUpload onDone={() => router.refresh()} />}
+      {tab === 'episodes' && <EpisodeList episodes={episodes} />}
+      {tab === 'models' && <ModelSettings />}
     </div>
   );
 }

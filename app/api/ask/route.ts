@@ -12,7 +12,7 @@ import {
 import { checkNetworkQuota } from '@/lib/rateLimit';
 import { timestampedYouTubeUrl, fmtTimestamp } from '@/lib/youtube';
 import { screenQuestion } from '@/lib/guardrails';
-import { env } from '@/lib/env';
+import { getAppSettings } from '@/lib/appSettings';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -71,9 +71,10 @@ export async function POST(req: Request) {
   }
 
   // ---- 6. Embed the question ----
+  const settings = await getAppSettings();
   let qvec: number[];
   try {
-    qvec = await embedOne(cleaned);
+    qvec = await embedOne(cleaned, settings.embedModel);
   } catch (e) {
     return NextResponse.json({ error: 'embedding_failed', details: String(e) }, { status: 502 });
   }
@@ -107,7 +108,7 @@ export async function POST(req: Request) {
     const { data: ansId } = await userClient.rpc('fn_save_answer', {
       p_question_id: questionId,
       p_text: answerText,
-      p_model: env.CHAT_MODEL(),
+      p_model: settings.chatModel,
       p_chunk_ids: [],
     });
     return NextResponse.json({
@@ -128,6 +129,7 @@ export async function POST(req: Request) {
       temperature: 0.1,
       maxTokens: 1400,
       jsonMode: true,
+      model: settings.chatModel,
     });
     rawLLM = completion.text;
     modelUsed = completion.model;

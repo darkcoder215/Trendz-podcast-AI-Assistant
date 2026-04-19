@@ -65,7 +65,7 @@ export async function embed(inputs: string[], model?: string): Promise<number[][
   return items.map((x) => x.embedding);
 }
 
-export async function embedOne(input: string): Promise<number[]> {
-  const [v] = await embed([input]);
+export async function embedOne(input: string, model?: string): Promise<number[]> {
+  const [v] = await embed([input], model);
   return v;
 }
