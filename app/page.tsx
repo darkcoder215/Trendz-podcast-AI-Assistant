@@ -161,11 +161,11 @@ export default async function HomePage() {
       <Nav active="home" />
 
       {/* Hero */}
-      <section className="ar fade-in" dir="rtl" style={{ padding: '170px 20px 100px', position: 'relative', overflow: 'hidden' }}>
+      <section className="ar fade-in hero-section" dir="rtl" style={{ padding: '170px 20px 100px', position: 'relative', overflow: 'hidden' }}>
         <BgPattern opacity={0.8} />
-        <div style={{ position: 'absolute', top: 180, left: 60, width: 96, height: 96, borderRadius: '50%', background: 'var(--accent-3)', opacity: 0.35 }} />
-        <div style={{ position: 'absolute', top: 240, right: 110, width: 18, height: 18, borderRadius: '50%', background: 'var(--accent-2)' }} />
-        <div style={{ position: 'absolute', bottom: 80, right: 60, width: 160, height: 160, borderRadius: '50%', border: '3px solid var(--accent)', opacity: 0.25 }} />
+        <div className="hero-deco" style={{ top: 180, left: 60, width: 96, height: 96, borderRadius: '50%', background: 'var(--accent-3)', opacity: 0.35 }} />
+        <div className="hero-deco" style={{ top: 240, right: 110, width: 18, height: 18, borderRadius: '50%', background: 'var(--accent-2)' }} />
+        <div className="hero-deco" style={{ bottom: 80, right: 60, width: 160, height: 160, borderRadius: '50%', border: '3px solid var(--accent)', opacity: 0.25 }} />
 
         <div style={{ maxWidth: 1100, margin: '0 auto', position: 'relative', zIndex: 1, textAlign: 'center' }}>
           <div
@@ -255,7 +255,7 @@ export default async function HomePage() {
       </section>
 
       {/* Benefits */}
-      <section className="ar benefits-section" dir="rtl" style={{ padding: '120px 20px', background: 'var(--bg-alt)' }}>
+      <section className="ar benefits-section cv-auto" dir="rtl" style={{ padding: '120px 20px', background: 'var(--bg-alt)' }}>
         <BenefitsShapes />
         <div style={{ maxWidth: 1280, margin: '0 auto', position: 'relative', zIndex: 1 }}>
           <SectionHead
@@ -286,7 +286,7 @@ export default async function HomePage() {
       </section>
 
       {/* How it works */}
-      <section className="ar" dir="rtl" style={{ padding: '120px 20px' }}>
+      <section className="ar cv-auto" dir="rtl" style={{ padding: '120px 20px' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
           <SectionHead eyebrowAr="كيف يعمل" titleAr="من السؤال إلى الإجابة في أقل من دقيقة." center />
           <div
@@ -331,7 +331,7 @@ export default async function HomePage() {
       </section>
 
       {/* Recent Episodes */}
-      <section className="ar" dir="rtl" style={{ padding: '120px 20px', background: 'var(--bg-alt)' }}>
+      <section className="ar cv-auto" dir="rtl" style={{ padding: '120px 20px', background: 'var(--bg-alt)' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', gap: 20, flexWrap: 'wrap' }}>
             <SectionHead eyebrowAr="الحلقات الأخيرة" titleAr="ابدأ من حلقة واسأل عنها." descAr="كل الحلقات مُفهرَسة وجاهزة للسؤال." />
@@ -383,8 +383,8 @@ export default async function HomePage() {
                         height: 96,
                         borderRadius: 14,
                         background: ep.guest_photo_url
-                          ? `url(${ep.guest_photo_url}) center/cover`
-                          : `linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%)`,
+                          ? 'transparent'
+                          : 'linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%)',
                         flexShrink: 0,
                         display: 'flex',
                         alignItems: 'center',
@@ -393,7 +393,17 @@ export default async function HomePage() {
                         overflow: 'hidden',
                       }}
                     >
-                      {!ep.guest_photo_url && (
+                      {ep.guest_photo_url ? (
+                        <img
+                          src={ep.guest_photo_url}
+                          alt={ep.guest_name_ar}
+                          loading="lazy"
+                          decoding="async"
+                          width={96}
+                          height={96}
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        />
+                      ) : (
                         <div style={{ fontFamily: 'Mont', fontWeight: 900, fontSize: 40, color: '#fff' }}>{ep.num}</div>
                       )}
                     </div>
@@ -454,7 +464,7 @@ export default async function HomePage() {
       </section>
 
       {/* CTA */}
-      <section className="ar" dir="rtl" style={{ padding: '100px 20px' }}>
+      <section className="ar cv-auto" dir="rtl" style={{ padding: '100px 20px' }}>
         <div
           style={{
             maxWidth: 1100,

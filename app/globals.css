@@ -115,7 +115,9 @@ mark { background: var(--accent-4); color: var(--fg-strong); font-weight: 900; p
 
 /* ============ Theme switcher ============ */
 .theme-switch {
-  position: fixed; bottom: 24px; z-index: 9000;
+  position: fixed;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 20px);
+  z-index: 9000;
   display: inline-flex; align-items: center; gap: 6px;
   background: var(--surface-raised);
   border: 2px solid var(--border-strong);
@@ -134,11 +136,21 @@ mark { background: var(--accent-4); color: var(--fg-strong); font-weight: 900; p
   padding: 10px 18px;
   border-radius: 999px;
   display: inline-flex; align-items: center; gap: 8px;
-  transition: all 0.2s ease;
+  transition: color 0.2s ease, background 0.2s ease;
 }
 .theme-switch button:hover { color: var(--fg); }
 .theme-switch button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
 .theme-switch svg { width: 16px; height: 16px; }
+
+/* Collapse theme switcher to icon-only on narrow screens so it stops
+   colliding with hero CTAs. */
+@media (max-width: 720px) {
+  .theme-switch { padding: 4px; gap: 2px; bottom: calc(env(safe-area-inset-bottom, 0px) + 12px); }
+  [dir="rtl"] .theme-switch { left: 12px; }
+  [dir="ltr"] .theme-switch { right: 12px; }
+  .theme-switch button { padding: 8px 10px; font-size: 0; }
+  .theme-switch button svg { width: 18px; height: 18px; }
+}
 
 /* ============ Subtle animations (reduced-motion respected) ============ */
 @keyframes caret { 0%, 50% { opacity: 1 } 51%, 100% { opacity: 0 } }
@@ -240,6 +252,19 @@ mark { background: var(--accent-4); color: var(--fg-strong); font-weight: 900; p
 @media (min-width: 901px) {
   .show-on-mobile { display: none !important; }
 }
+
+/* Hero decorative circles bleed into the title on narrow screens. Hide
+   them below 720px — they're purely ornamental. */
+.hero-deco { position: absolute; pointer-events: none; }
+@media (max-width: 720px) {
+  .hero-deco { display: none !important; }
+  .hero-section { padding-top: 120px !important; padding-bottom: 60px !important; }
+}
+
+/* Perf: skip layout/paint for sections below the fold until near the
+   viewport. Huge win on mobile where the user rarely scrolls past the
+   hero before first input. */
+.cv-auto { content-visibility: auto; contain-intrinsic-size: 800px; }
 
 /* ============ Forms ============ */
 input, textarea {

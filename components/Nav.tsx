@@ -12,10 +12,21 @@ export function Nav({ active = null, quotaLeft }: { active?: Active; quotaLeft?:
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const h = () => setScrolled(window.scrollY > 8);
-    window.addEventListener('scroll', h);
-    h();
-    return () => window.removeEventListener('scroll', h);
+    let raf = 0;
+    const compute = () => setScrolled(window.scrollY > 8);
+    const h = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        compute();
+      });
+    };
+    window.addEventListener('scroll', h, { passive: true });
+    compute();
+    return () => {
+      window.removeEventListener('scroll', h);
+      if (raf) cancelAnimationFrame(raf);
+    };
   }, []);
 
   const links: { id: Exclude<Active, null>; labelAr: string; href: string }[] = [
