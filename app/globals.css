@@ -155,6 +155,83 @@ mark { background: var(--accent-4); color: var(--fg-strong); font-weight: 900; p
   * { animation-duration: .001ms !important; transition-duration: .001ms !important; }
 }
 
+/* ============ Benefits section — centered grid + floating shapes ============ */
+.benefits-section { position: relative; overflow: hidden; }
+
+.benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+  margin-top: 72px;
+  max-width: 1100px;
+  margin-inline: auto;
+}
+@media (max-width: 960px) { .benefits-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) { .benefits-grid { grid-template-columns: 1fr; gap: 16px; max-width: 420px; } }
+
+.benefit-card {
+  padding: 32px;
+  background: var(--surface);
+  border: 3px solid var(--border-strong);
+  border-radius: 22px;
+  text-align: center;
+  transition: transform .25s ease, box-shadow .25s ease;
+  will-change: transform;
+}
+.benefit-card:hover { transform: translateY(-4px) rotate(-.3deg); }
+.benefit-card .icon-wrap {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 64px; height: 64px; border-radius: 18px;
+  background: var(--surface-alt);
+  border: 2px solid var(--border);
+  margin-bottom: 20px;
+  transition: transform .4s ease;
+}
+.benefit-card:hover .icon-wrap { transform: rotate(-6deg) scale(1.08); }
+.benefit-card .icon-wrap span { font-size: 32px; line-height: 1; }
+
+/* Decorative shapes — absolutely positioned, float gently */
+.shape {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0.55;
+  color: var(--accent);
+}
+.shape svg { width: 100%; height: 100%; display: block; }
+.shape.s-mic    { top: 8%;   left: 4%;  width: 72px; height: 72px; color: var(--accent-2); animation: float-a 7s ease-in-out infinite; }
+.shape.s-wave   { top: 18%;  right: 6%; width: 90px; height: 60px; color: var(--accent-3); animation: float-b 8s ease-in-out infinite; }
+.shape.s-coin   { bottom: 14%; left: 7%; width: 64px; height: 64px; color: var(--accent-4); animation: float-c 9s ease-in-out infinite; }
+.shape.s-bulb   { bottom: 10%; right: 5%; width: 68px; height: 68px; color: var(--accent-4); animation: float-a 6.5s ease-in-out infinite; animation-delay: .6s; }
+.shape.s-chart  { top: 46%;  left: 2%;  width: 60px; height: 60px; color: var(--accent-3); animation: float-b 10s ease-in-out infinite; animation-delay: 1.2s; }
+.shape.s-dot-lg { top: 55%;  right: 3%; width: 120px; height: 120px; border-radius: 50%; background: var(--accent); opacity: 0.08; animation: float-c 12s ease-in-out infinite; }
+.shape.s-ring   { top: 4%; right: 40%; width: 46px; height: 46px; border-radius: 50%; border: 3px solid var(--accent-2); opacity: 0.35; animation: float-b 11s ease-in-out infinite; }
+
+@media (max-width: 720px) {
+  .shape.s-mic, .shape.s-wave, .shape.s-coin, .shape.s-bulb, .shape.s-chart { transform: scale(.65); }
+  .shape.s-dot-lg, .shape.s-ring { display: none; }
+}
+
+@keyframes float-a {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  50%      { transform: translateY(-14px) rotate(4deg); }
+}
+@keyframes float-b {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  50%      { transform: translateY(10px) rotate(-5deg); }
+}
+@keyframes float-c {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  50%      { transform: translateY(-8px) translateX(6px); }
+}
+@keyframes pulse-soft {
+  0%, 100% { opacity: .35; transform: scale(1); }
+  50%      { opacity: .6;  transform: scale(1.05); }
+}
+.shape.s-dot-lg { animation: pulse-soft 6s ease-in-out infinite; }
+
+.benefit-card { animation: fade-up .6s ease both; }
+
+
 /* ============ Responsive helpers ============ */
 @media (max-width: 900px) {
   .hide-on-mobile { display: none !important; }

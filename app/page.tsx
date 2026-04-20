@@ -33,6 +33,59 @@ function fmtK(n: number) {
   return String(n);
 }
 
+function BenefitsShapes() {
+  // Decorative floating shapes representing: microphone, sound waves, coin,
+  // lightbulb (business ideas), bar chart. Aria-hidden — purely visual.
+  return (
+    <div aria-hidden className="benefits-shapes">
+      <div className="shape s-mic">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="18" y="6" width="12" height="22" rx="6" />
+          <path d="M12 22a12 12 0 0 0 24 0" />
+          <path d="M24 34v6" />
+          <path d="M18 40h12" />
+        </svg>
+      </div>
+      <div className="shape s-wave">
+        <svg viewBox="0 0 90 60" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round">
+          <path d="M6 30h6" />
+          <path d="M20 18v24" />
+          <path d="M34 8v44" />
+          <path d="M48 18v24" />
+          <path d="M62 12v36" />
+          <path d="M76 22v16" />
+        </svg>
+      </div>
+      <div className="shape s-coin">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="24" cy="24" r="18" />
+          <path d="M24 12v24" />
+          <path d="M30 17h-9a3 3 0 0 0 0 6h6a3 3 0 0 1 0 6h-9" />
+        </svg>
+      </div>
+      <div className="shape s-bulb">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M24 6a12 12 0 0 0-7 21.5V32h14v-4.5A12 12 0 0 0 24 6z" />
+          <path d="M19 36h10" />
+          <path d="M20 40h8" />
+          <path d="M24 2v2M4 14l2 1M44 14l-2 1M4 24h2M42 24h2" />
+        </svg>
+      </div>
+      <div className="shape s-chart">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M6 42h36" />
+          <rect x="10" y="26" width="6" height="14" />
+          <rect x="21" y="18" width="6" height="22" />
+          <rect x="32" y="10" width="6" height="30" />
+          <path d="M10 14l8-6 8 4 12-8" />
+        </svg>
+      </div>
+      <div className="shape s-ring" />
+      <div className="shape s-dot-lg" />
+    </div>
+  );
+}
+
 function SectionHead({
   eyebrowAr,
   titleAr,
@@ -202,36 +255,26 @@ export default async function HomePage() {
       </section>
 
       {/* Benefits */}
-      <section className="ar" dir="rtl" style={{ padding: '120px 20px', background: 'var(--bg-alt)' }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto' }}>
+      <section className="ar benefits-section" dir="rtl" style={{ padding: '120px 20px', background: 'var(--bg-alt)' }}>
+        <BenefitsShapes />
+        <div style={{ maxWidth: 1280, margin: '0 auto', position: 'relative', zIndex: 1 }}>
           <SectionHead
             eyebrowAr="لماذا Madrasa AI"
             titleAr="محتوى البودكاست بين يديك، مُنظَّماً وقابلاً للسؤال."
             descAr="حلقات «مدرسة الاستثمار» مليئة بالحكمة — لكن المحتوى الطويل يصعب استحضاره لحظة تحتاجه. هنا يأتي دور المساعد."
             center
           />
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-              gap: 22,
-              marginTop: 72,
-            }}
-          >
+          <div className="benefits-grid">
             {benefits.map((it, i) => (
               <div
                 key={it.titleAr}
-                className="fade-up"
+                className="benefit-card"
                 style={{
-                  padding: 32,
-                  background: 'var(--surface)',
-                  border: '3px solid var(--border-strong)',
-                  borderRadius: 22,
                   boxShadow: i % 2 === 0 ? 'var(--sh-brutal)' : 'var(--sh-2)',
-                  animationDelay: `${i * 80}ms`,
+                  animationDelay: `${i * 90}ms`,
                 }}
               >
-                <div style={{ fontSize: 38, marginBottom: 20 }}>{it.icon}</div>
+                <div className="icon-wrap"><span>{it.icon}</span></div>
                 <h3 style={{ fontFamily: 'IBM Plex Sans Arabic', fontSize: 22, fontWeight: 700, margin: '0 0 14px', color: 'var(--fg-strong)' }}>
                   {it.titleAr}
                 </h3>
