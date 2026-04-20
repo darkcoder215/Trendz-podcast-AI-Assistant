@@ -44,9 +44,10 @@ export async function checkNetworkQuota(req: Request): Promise<
     .maybeSingle();
 
   if (error) {
-    // Fail-open but log — we don't want to DoS the app if the ledger is flaky.
+    // Fail CLOSED. If we can't read the ledger we refuse the request rather
+    // than let an attacker drain OpenRouter credits by DoS-ing this table.
     console.error('[rateLimit] select failed', error);
-    return { ok: true, remaining: DAILY_NETWORK_MAX };
+    return { ok: false, reason: 'تعذّر التحقق من الحد اليومي مؤقتاً. حاول بعد قليل.' };
   }
 
   const current = data?.count ?? 0;
@@ -60,8 +61,9 @@ export async function checkNetworkQuota(req: Request): Promise<
     .upsert({ key, count: next, window_start: new Date().toISOString() }, { onConflict: 'key' });
 
   if (upErr) {
+    // Same reasoning — fail closed on write errors.
     console.error('[rateLimit] upsert failed', upErr);
-    return { ok: true, remaining: DAILY_NETWORK_MAX - next };
+    return { ok: false, reason: 'تعذّر تسجيل العدّاد مؤقتاً. حاول بعد قليل.' };
   }
   return { ok: true, remaining: DAILY_NETWORK_MAX - next };
 }

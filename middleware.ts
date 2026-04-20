@@ -12,10 +12,22 @@ type CookieToSet = { name: string; value: string; options: CookieOptions };
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next({ request: req });
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  // If the env isn't configured yet (e.g. misconfigured Vercel deployment),
+  // don't take the whole site down — pass the request through. Routes that
+  // strictly need Supabase will fail loudly with their own 500; public pages
+  // keep rendering.
+  if (!url || !anonKey) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('[middleware] Supabase env vars missing — skipping session refresh');
+    }
+    return res;
+  }
+
+  try {
+    const supabase = createServerClient(url, anonKey, {
       cookies: {
         getAll: () => req.cookies.getAll(),
         setAll: (list: CookieToSet[]) => {
@@ -25,21 +37,25 @@ export async function middleware(req: NextRequest) {
           });
         },
       },
-    },
-  );
+    });
 
-  // Touch the session so refresh tokens rotate.
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    // Touch the session so refresh tokens rotate.
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-  // For public routes, silently create an anonymous session if none.
-  // Skip for admin / API / static paths to avoid creating sessions on scraper hits.
-  const { pathname } = req.nextUrl;
-  const isPublicUi = pathname === '/' || pathname === '/ask' || pathname === '/leaderboard' || pathname.startsWith('/share/');
+    // For public routes, silently create an anonymous session if none.
+    // Skip for admin / API / static paths to avoid creating sessions on scraper hits.
+    const { pathname } = req.nextUrl;
+    const isPublicUi =
+      pathname === '/' || pathname === '/ask' || pathname === '/leaderboard' || pathname.startsWith('/share/');
 
-  if (!user && isPublicUi) {
-    await supabase.auth.signInAnonymously().catch(() => undefined);
+    if (!user && isPublicUi) {
+      await supabase.auth.signInAnonymously().catch(() => undefined);
+    }
+  } catch (err) {
+    // Never crash the middleware — it runs on every request. Log and continue.
+    console.error('[middleware] supabase error', err);
   }
 
   return res;
