@@ -87,6 +87,10 @@
 
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
 body {
   font-family: var(--font-en);
   font-weight: var(--w-body);
@@ -157,11 +161,41 @@ mark { background: var(--accent-4); color: var(--fg-strong); font-weight: 900; p
 @keyframes pulse-dot { 0%, 100% { opacity: 0.3 } 50% { opacity: 1 } }
 @keyframes fade-up { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes fade-in { from { opacity: 0 } to { opacity: 1 } }
+@keyframes pop-in { 0% { opacity: 0; transform: scale(.94); } 60% { transform: scale(1.02); } 100% { opacity: 1; transform: scale(1); } }
 
 .fade-up { animation: fade-up .5s ease both; }
 .fade-in { animation: fade-in .4s ease both; }
+.pop-in  { animation: pop-in .45s cubic-bezier(.2,.9,.3,1.1) both; }
 .reveal { opacity: 0; transform: translateY(16px); transition: opacity .6s ease, transform .6s ease; }
 .reveal.in { opacity: 1; transform: translateY(0); }
+
+/* Stagger helper — pair with `.stagger > *` and CSS variable --i (set inline). */
+.stagger > * { animation-delay: calc(var(--i, 0) * 70ms); }
+
+/* Micro-interaction utility: tiny press / lift on click + hover. */
+.tap { transition: transform .15s ease, box-shadow .15s ease; }
+.tap:hover  { transform: translateY(-1px); }
+.tap:active { transform: translateY(0) scale(.98); }
+
+/* Accessible focus ring everywhere — not just inputs. */
+*:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--accent-2) 70%, transparent);
+  outline-offset: 3px;
+  border-radius: inherit;
+}
+
+/* Mobile tap targets ≥ 44px on the small chips/buttons we render with
+   tighter padding. Doesn't affect their visual size, just the hit area. */
+@media (max-width: 720px) {
+  button, a[role="button"], .tap {
+    min-height: 36px;
+  }
+  /* Pillar chips need a bit more breathing room on touch. */
+  [data-touchable], .chip-touch {
+    min-height: 44px;
+    padding-block: 10px;
+  }
+}
 
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: .001ms !important; transition-duration: .001ms !important; }

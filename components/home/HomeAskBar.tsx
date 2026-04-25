@@ -61,6 +61,7 @@ export function HomeAskBar() {
         />
         <button
           onClick={submit}
+          className="tap"
           style={{
             padding: '14px 30px',
             background: 'var(--accent-2)',
@@ -80,23 +81,27 @@ export function HomeAskBar() {
         </button>
       </div>
 
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: 'center', marginTop: 24 }}>
+      <div className="stagger" style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: 'center', marginTop: 24 }}>
         <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--fg-muted)', alignSelf: 'center' }}>جرّب:</span>
-        {SUGGESTIONS.map((s) => (
+        {SUGGESTIONS.map((s, i) => (
           <button
             key={s}
             onClick={() => router.push(`/ask?q=${encodeURIComponent(s)}`)}
-            style={{
-              padding: '8px 16px',
-              background: 'var(--surface)',
-              border: '2px solid var(--border)',
-              borderRadius: 999,
-              fontSize: 13,
-              fontWeight: 700,
-              color: 'var(--fg)',
-              cursor: 'pointer',
-              fontFamily: 'inherit',
-            }}
+            className="fade-up tap chip-touch"
+            style={
+              {
+                padding: '8px 16px',
+                background: 'var(--surface)',
+                border: '2px solid var(--border)',
+                borderRadius: 999,
+                fontSize: 13,
+                fontWeight: 700,
+                color: 'var(--fg)',
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+                ['--i' as string]: i + 1,
+              } as React.CSSProperties
+            }
           >
             {s}
           </button>

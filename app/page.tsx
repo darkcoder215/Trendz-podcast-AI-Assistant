@@ -222,6 +222,7 @@ export default async function HomePage() {
 
           {/* Stats strip */}
           <div
+            className="stagger"
             style={{
               marginTop: 80,
               display: 'grid',
@@ -238,13 +239,17 @@ export default async function HomePage() {
             ].map((s, i) => (
               <div
                 key={s.l}
-                style={{
-                  background: 'var(--surface)',
-                  border: '3px solid var(--border-strong)',
-                  borderRadius: 18,
-                  padding: '22px 18px',
-                  boxShadow: i % 2 === 0 ? 'var(--sh-brutal)' : 'var(--sh-2)',
-                }}
+                className="pop-in tap"
+                style={
+                  {
+                    background: 'var(--surface)',
+                    border: '3px solid var(--border-strong)',
+                    borderRadius: 18,
+                    padding: '22px 18px',
+                    boxShadow: i % 2 === 0 ? 'var(--sh-brutal)' : 'var(--sh-2)',
+                    ['--i' as string]: i,
+                  } as React.CSSProperties
+                }
               >
                 <div style={{ fontFamily: 'Mont', fontWeight: 900, fontSize: 40, color: 'var(--accent-2)', lineHeight: 1 }}>{s.v}</div>
                 <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--fg)', marginTop: 10 }}>{s.l}</div>
@@ -264,15 +269,17 @@ export default async function HomePage() {
             descAr="حلقات «مدرسة الاستثمار» مليئة بالحكمة — لكن المحتوى الطويل يصعب استحضاره لحظة تحتاجه. هنا يأتي دور المساعد."
             center
           />
-          <div className="benefits-grid">
+          <div className="benefits-grid stagger">
             {benefits.map((it, i) => (
               <div
                 key={it.titleAr}
                 className="benefit-card"
-                style={{
-                  boxShadow: i % 2 === 0 ? 'var(--sh-brutal)' : 'var(--sh-2)',
-                  animationDelay: `${i * 90}ms`,
-                }}
+                style={
+                  {
+                    boxShadow: i % 2 === 0 ? 'var(--sh-brutal)' : 'var(--sh-2)',
+                    ['--i' as string]: i,
+                  } as React.CSSProperties
+                }
               >
                 <div className="icon-wrap"><span>{it.icon}</span></div>
                 <h3 style={{ fontFamily: 'IBM Plex Sans Arabic', fontSize: 22, fontWeight: 700, margin: '0 0 14px', color: 'var(--fg-strong)' }}>
@@ -505,6 +512,7 @@ export default async function HomePage() {
             <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
               <Link
                 href="/ask"
+                className="tap"
                 style={{
                   padding: '18px 36px',
                   background: 'var(--fg-strong)',
@@ -521,6 +529,7 @@ export default async function HomePage() {
               </Link>
               <Link
                 href="/leaderboard"
+                className="tap"
                 style={{
                   padding: '18px 36px',
                   background: 'transparent',
