@@ -51,17 +51,19 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'no_chunks_produced' }, { status: 400 });
   }
 
-  // Embed in batches of 96 (OpenAI default limit).
+  // Embed in batches of 96 (OpenAI default limit), in parallel — the bottleneck
+  // is OpenRouter's per-batch latency, so a serial loop wasted up to N×T.
   const { embedModel } = await getAppSettings();
-  const vectors: number[][] = [];
+  const batches: string[][] = [];
   for (let i = 0; i < chunks.length; i += 96) {
-    const batch = chunks.slice(i, i + 96).map((c) => c.content);
-    try {
-      const vecs = await embed(batch, embedModel);
-      vectors.push(...vecs);
-    } catch (e) {
-      return NextResponse.json({ error: 'embed_failed', details: String(e) }, { status: 502 });
-    }
+    batches.push(chunks.slice(i, i + 96).map((c) => c.content));
+  }
+  let vectors: number[][];
+  try {
+    const results = await Promise.all(batches.map((b) => embed(b, embedModel)));
+    vectors = results.flat();
+  } catch (e) {
+    return NextResponse.json({ error: 'embed_failed', details: String(e) }, { status: 502 });
   }
 
   if (vectors.length !== chunks.length) {

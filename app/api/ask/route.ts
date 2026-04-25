@@ -17,6 +17,20 @@ import { getAppSettings } from '@/lib/appSettings';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
+const LEADERBOARD_REFRESH_MS = 60_000;
+let lastLeaderboardRefresh = 0;
+function maybeRefreshLeaderboard() {
+  const now = Date.now();
+  if (now - lastLeaderboardRefresh < LEADERBOARD_REFRESH_MS) return;
+  lastLeaderboardRefresh = now;
+  void Promise.resolve(supabaseService().rpc('fn_refresh_leaderboard')).then(
+    (r) => {
+      if (r.error) console.error('[ask] leaderboard refresh failed', r.error);
+    },
+    (err) => console.error('[ask] leaderboard refresh threw', err),
+  );
+}
+
 export async function POST(req: Request) {
   // ---- 1. Auth ----
   const userClient = await supabaseServer();
@@ -242,13 +256,10 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'save_failed', details: saveErr.message }, { status: 500 });
   }
 
-  // Fire-and-forget leaderboard refresh.
-  void Promise.resolve(supabaseService().rpc('fn_refresh_leaderboard')).then(
-    (r) => {
-      if (r.error) console.error('[ask] leaderboard refresh failed', r.error);
-    },
-    (err) => console.error('[ask] leaderboard refresh threw', err),
-  );
+  // Fire-and-forget leaderboard refresh, throttled to once per minute per
+  // serverless instance. The daily Vercel cron is the source of truth; this
+  // just keeps the leaderboard fresh during bursts without hammering the MV.
+  maybeRefreshLeaderboard();
 
   return NextResponse.json({
     answerId,

@@ -69,7 +69,7 @@ export function buildPrompt(question: string, chunks: RetrievedChunk[]): ChatMes
     .map(
       (c) =>
         `<chunk ep="${c.episode_num}" t="${fmtMMSS(c.start_sec)}" t_end="${fmtMMSS(c.end_sec)}" guest="${escapeAttr(c.guest_name)}" title="${escapeAttr(c.episode_title)}">
-${c.content}
+${escapeChunkBody(c.content)}
 </chunk>`,
     )
     .join('\n\n');
@@ -101,6 +101,13 @@ function fmtMMSS(sec: number): string {
 
 function escapeAttr(s: string): string {
   return s.replace(/"/g, "'").replace(/\n/g, ' ').slice(0, 200);
+}
+
+// Neutralize any angle brackets inside chunk text so a transcript that
+// happens to contain "</chunk>" can't close our wrapper tag and inject new
+// instructions into the prompt's instruction-space.
+function escapeChunkBody(s: string): string {
+  return s.replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
 /** Strict schema the model is instructed to follow. */
