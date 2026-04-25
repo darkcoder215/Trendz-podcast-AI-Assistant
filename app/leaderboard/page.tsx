@@ -232,11 +232,9 @@ export default async function LeaderboardPage() {
                   }}
                 >
                   <div
+                    className="lb-row"
                     style={{
                       padding: '16px 20px',
-                      display: 'grid',
-                      gridTemplateColumns: '60px 1fr 110px 110px',
-                      gap: 16,
                       fontSize: 12,
                       color: 'var(--accent-2)',
                       fontWeight: 900,
@@ -249,17 +247,14 @@ export default async function LeaderboardPage() {
                     <div>#</div>
                     <div>الضيف</div>
                     <div style={{ textAlign: 'center' }}>اقتباسات</div>
-                    <div style={{ textAlign: 'center' }}>حلقات</div>
+                    <div className="lb-col-episodes" style={{ textAlign: 'center' }}>حلقات</div>
                   </div>
                   {rest.map((g, i) => (
                     <div
                       key={g.guest_name_ar}
+                      className="lb-row"
                       style={{
                         padding: '16px 20px',
-                        display: 'grid',
-                        gridTemplateColumns: '60px 1fr 110px 110px',
-                        gap: 16,
-                        alignItems: 'center',
                         borderBottom: i === rest.length - 1 ? 0 : '2px solid var(--border)',
                       }}
                     >
@@ -299,7 +294,7 @@ export default async function LeaderboardPage() {
                       <div style={{ textAlign: 'center', fontFamily: 'Mont', fontWeight: 900, fontSize: 15, color: 'var(--accent-2)' }}>
                         {g.citations.toLocaleString('ar')}
                       </div>
-                      <div style={{ textAlign: 'center', fontSize: 14, fontWeight: 900, color: 'var(--fg-strong)' }}>{g.episodes}</div>
+                      <div className="lb-col-episodes" style={{ textAlign: 'center', fontSize: 14, fontWeight: 900, color: 'var(--fg-strong)' }}>{g.episodes}</div>
                     </div>
                   ))}
                 </div>

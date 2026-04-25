@@ -300,6 +300,20 @@ mark { background: var(--accent-4); color: var(--fg-strong); font-weight: 900; p
    hero before first input. */
 .cv-auto { content-visibility: auto; contain-intrinsic-size: 800px; }
 
+/* Leaderboard table — desktop has 4 fixed-ish columns, mobile drops the
+   episodes count and tightens the remaining columns so the guest name
+   isn't crushed. */
+.lb-row {
+  display: grid;
+  grid-template-columns: 60px 1fr 110px 110px;
+  gap: 16px;
+  align-items: center;
+}
+@media (max-width: 720px) {
+  .lb-row { grid-template-columns: 36px 1fr 64px; gap: 10px; }
+  .lb-row > .lb-col-episodes { display: none; }
+}
+
 /* ============ Forms ============ */
 input, textarea {
   font-family: inherit;
