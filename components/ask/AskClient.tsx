@@ -24,7 +24,9 @@ type Citation = {
   guestName: string;
   speaker: string | null;
   startSec: number;
+  endSec: number;
   timestamp: string;
+  timestampEnd: string;
   youtubeUrl: string;
   quoteAr: string;
   highlightAr: string | null;
@@ -634,12 +636,21 @@ function AssistantMsg({
                         display: 'flex',
                         alignItems: 'center',
                         gap: 5,
+                        whiteSpace: 'nowrap',
                       }}
                     >
                       {Ico.play} ح{c.episodeNum} · {c.timestamp}
+                      {c.timestampEnd && c.timestampEnd !== c.timestamp ? ` – ${c.timestampEnd}` : ''}
                     </div>
-                    <div style={{ fontSize: 14, fontWeight: 600, lineHeight: 1.75, fontStyle: 'italic' }}>
-                      «{renderHighlighted(c.quoteAr, c.highlightAr)}»
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      {(c.speaker || c.guestName) && (
+                        <div style={{ fontSize: 12, fontWeight: 800, color: 'var(--fg-muted)', marginBottom: 4 }}>
+                          {c.speaker || c.guestName}
+                        </div>
+                      )}
+                      <div style={{ fontSize: 14, fontWeight: 600, lineHeight: 1.75, fontStyle: 'italic' }}>
+                        «{renderHighlighted(c.quoteAr, c.highlightAr)}»
+                      </div>
                     </div>
                   </a>
                 ))}

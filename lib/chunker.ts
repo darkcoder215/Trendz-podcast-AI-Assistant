@@ -134,11 +134,14 @@ export function packChunks(segments: Segment[], targetTokens = 400, overlapToken
   let buf: Segment[] = [];
   let bufTokens = 0;
 
-  const flush = () => {
+  const flush = (nextSeg?: Segment) => {
     if (buf.length === 0) return;
     const content = buf.map((s) => s.text).join(' ').trim();
     const startSec = buf[0].startSec;
-    const endSec = buf[buf.length - 1].startSec;
+    // The chunk's true end is the moment the *next* segment begins. When
+    // there is no next segment (final chunk), fall back to the last
+    // segment's start — caller can post-process with episode.duration_sec.
+    const endSec = nextSeg ? nextSeg.startSec : buf[buf.length - 1].startSec;
     const speakers = buf.map((s) => s.speaker).filter((x): x is string => !!x);
     const speaker = speakers.length > 0 ? speakers[0] : null;
     const chapters = buf.map((s) => s.chapter).filter((x): x is string => !!x);
@@ -171,7 +174,7 @@ export function packChunks(segments: Segment[], targetTokens = 400, overlapToken
 
   for (const seg of segments) {
     const t = encode(seg.text).length;
-    if (bufTokens > 0 && bufTokens + t > targetTokens) flush();
+    if (bufTokens > 0 && bufTokens + t > targetTokens) flush(seg);
     buf.push(seg);
     bufTokens += t;
   }

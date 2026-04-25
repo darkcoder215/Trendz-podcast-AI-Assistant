@@ -36,7 +36,7 @@ export async function POST(req: Request) {
 
   const { data: ep, error: epErr } = await svc
     .from('episodes')
-    .select('id, num')
+    .select('id, num, guest_name_ar, duration_sec')
     .eq('id', payload.episodeId)
     .maybeSingle();
   if (epErr || !ep) return NextResponse.json({ error: 'episode_not_found' }, { status: 404 });
@@ -71,16 +71,26 @@ export async function POST(req: Request) {
   // Replace existing chunks for this episode, then bulk-insert new ones.
   await svc.from('chunks').delete().eq('episode_id', payload.episodeId);
 
-  const rows = chunks.map((c, idx) => ({
-    episode_id: payload.episodeId,
-    chunk_index: idx,
-    content_ar: c.content,
-    speaker_ar: c.speaker,
-    start_sec: c.startSec,
-    end_sec: c.endSec,
-    embedding: `[${vectors[idx].join(',')}]`,
-    token_count: c.tokenCount,
-  }));
+  // Speaker is denormalized from the episode's guest record — every chunk
+  // carries the guest name as the speaker label, rather than the noisy
+  // colon-prefix heuristic the chunker tries to extract.
+  const rows = chunks.map((c, idx) => {
+    const isLast = idx === chunks.length - 1;
+    // Final chunk has no next-segment start, so the chunker leaves its
+    // end_sec equal to the last segment's start. If the episode duration
+    // is known, prefer that as the true end of the chunk.
+    const endSec = isLast && ep.duration_sec ? Math.max(c.endSec, ep.duration_sec) : c.endSec;
+    return {
+      episode_id: payload.episodeId,
+      chunk_index: idx,
+      content_ar: c.content,
+      speaker_ar: ep.guest_name_ar,
+      start_sec: c.startSec,
+      end_sec: endSec,
+      embedding: `[${vectors[idx].join(',')}]`,
+      token_count: c.tokenCount,
+    };
+  });
 
   const { error: insertErr } = await svc.from('chunks').insert(rows);
   if (insertErr) {

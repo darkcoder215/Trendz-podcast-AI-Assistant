@@ -98,7 +98,11 @@ export async function POST(req: Request) {
     guest_name: String(r.guest_name),
     youtube_id: String(r.youtube_id),
     start_sec: Number(r.start_sec),
-    speaker: (r.speaker_ar as string) || null,
+    end_sec: Number(r.end_sec),
+    // Speaker label comes from the episode's guest record (denormalized
+    // onto the chunk at ingest time), so the UI never falls back to the
+    // colon-prefix heuristic.
+    speaker: (r.speaker_ar as string) || String(r.guest_name) || null,
     content: String(r.content_ar),
   }));
 
@@ -173,7 +177,9 @@ export async function POST(req: Request) {
     guestName: string;
     speaker: string | null;
     startSec: number;
+    endSec: number;
     timestamp: string;
+    timestampEnd: string;
     youtubeUrl: string;
     quoteAr: string;
     highlightAr: string | null;
@@ -191,9 +197,11 @@ export async function POST(req: Request) {
       episodeNum: m.chunk.episode_num,
       episodeTitle: m.chunk.episode_title,
       guestName: m.chunk.guest_name,
-      speaker: m.chunk.speaker,
+      speaker: m.chunk.speaker || m.chunk.guest_name,
       startSec: m.chunk.start_sec,
+      endSec: m.chunk.end_sec,
       timestamp: fmtTimestamp(m.chunk.start_sec),
+      timestampEnd: fmtTimestamp(m.chunk.end_sec),
       youtubeUrl: m.chunk.youtube_id ? timestampedYouTubeUrl(m.chunk.youtube_id, m.chunk.start_sec) : '',
       quoteAr: m.chunk.content.length > 360 ? `${m.chunk.content.slice(0, 360)}…` : m.chunk.content,
       highlightAr: m.highlight,
@@ -211,9 +219,11 @@ export async function POST(req: Request) {
         episodeNum: c.episode_num,
         episodeTitle: c.episode_title,
         guestName: c.guest_name,
-        speaker: c.speaker,
+        speaker: c.speaker || c.guest_name,
         startSec: c.start_sec,
+        endSec: c.end_sec,
         timestamp: fmtTimestamp(c.start_sec),
+        timestampEnd: fmtTimestamp(c.end_sec),
         youtubeUrl: c.youtube_id ? timestampedYouTubeUrl(c.youtube_id, c.start_sec) : '',
         quoteAr: c.content.length > 360 ? `${c.content.slice(0, 360)}…` : c.content,
         highlightAr: null,

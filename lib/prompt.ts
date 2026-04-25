@@ -8,6 +8,7 @@ export type RetrievedChunk = {
   guest_name: string;
   youtube_id: string;
   start_sec: number;
+  end_sec: number;
   speaker: string | null;
   content: string;
 };
@@ -67,7 +68,7 @@ export function buildPrompt(question: string, chunks: RetrievedChunk[]): ChatMes
   const context = chunks
     .map(
       (c) =>
-        `<chunk ep="${c.episode_num}" t="${fmtMMSS(c.start_sec)}" guest="${escapeAttr(c.guest_name)}" title="${escapeAttr(c.episode_title)}">
+        `<chunk ep="${c.episode_num}" t="${fmtMMSS(c.start_sec)}" t_end="${fmtMMSS(c.end_sec)}" guest="${escapeAttr(c.guest_name)}" title="${escapeAttr(c.episode_title)}">
 ${c.content}
 </chunk>`,
     )
