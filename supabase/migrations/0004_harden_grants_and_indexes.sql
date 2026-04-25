@@ -18,7 +18,7 @@ revoke all     on function public.fn_ask(text, uuid[])                          
 revoke all     on function public.fn_save_answer(uuid, text, text, uuid[])            from public;
 revoke all     on function public.fn_identify(text, text)                             from public;
 revoke all     on function public.fn_refresh_leaderboard()                            from public;
-revoke all     on function public.fn_vector_search(extensions.vector, uuid[], int)    from public;
+revoke all     on function public.fn_vector_search(vector, uuid[], int)               from public;
 
 revoke execute on function public.fn_ask(text, uuid[])                                from anon;
 revoke execute on function public.fn_save_answer(uuid, text, text, uuid[])            from anon;
@@ -29,4 +29,4 @@ grant  execute on function public.fn_ask(text, uuid[])                          
 grant  execute on function public.fn_save_answer(uuid, text, text, uuid[])            to authenticated;
 grant  execute on function public.fn_identify(text, text)                             to authenticated;
 grant  execute on function public.fn_refresh_leaderboard()                            to authenticated;
-grant  execute on function public.fn_vector_search(extensions.vector, uuid[], int)    to anon, authenticated;
+grant  execute on function public.fn_vector_search(vector, uuid[], int)               to anon, authenticated;
