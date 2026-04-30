@@ -123,7 +123,8 @@ export async function POST(req: Request) {
   if (chunks.length === 0) {
     const answerText =
       'بحثت في أرشيف الحلقات ولم أجد مقاطع مرتبطة بسؤالك. جرّب صياغةً مختلفة أو اختر من الأسئلة الشائعة.';
-    const { data: ansId } = await userClient.rpc('fn_save_answer', {
+    const { data: ansId } = await supabaseService().rpc('fn_save_answer', {
+      p_user_id: user.id,
       p_question_id: questionId,
       p_text: answerText,
       p_model: settings.chatModel,
@@ -162,7 +163,8 @@ export async function POST(req: Request) {
     const refusalText =
       parsed.refusal_reason_ar?.trim() ||
       'لا أستطيع الإجابة على هذا السؤال. رجاءً اطرح سؤالاً عن محتوى الحلقات.';
-    const { data: ansId, error: saveErr } = await userClient.rpc('fn_save_answer', {
+    const { data: ansId, error: saveErr } = await supabaseService().rpc('fn_save_answer', {
+      p_user_id: user.id,
       p_question_id: questionId,
       p_text: refusalText,
       p_model: modelUsed,
@@ -245,8 +247,11 @@ export async function POST(req: Request) {
     }
   }
 
-  // ---- 11. Persist answer + citations ----
-  const { data: answerId, error: saveErr } = await userClient.rpc('fn_save_answer', {
+  // ---- 11. Persist answer + citations (service-role; fn_save_answer is no
+  //          longer callable from PostgREST so the leaderboard can't be
+  //          gamed by direct RPC with arbitrary chunk_ids). ----
+  const { data: answerId, error: saveErr } = await supabaseService().rpc('fn_save_answer', {
+    p_user_id: user.id,
     p_question_id: questionId,
     p_text: parsed.answer_ar,
     p_model: modelUsed,

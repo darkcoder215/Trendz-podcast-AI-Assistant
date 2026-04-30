@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { supabaseServer } from '@/lib/supabase/server';
+import { supabaseService } from '@/lib/supabase/service';
 import { Nav } from '@/components/Nav';
 import { Footer } from '@/components/Footer';
 import { SharePanel } from '@/components/share/SharePanel';
@@ -26,7 +27,9 @@ export default async function SharePage({
     .maybeSingle();
   if (!answer || answer.user_id !== user.id) notFound();
 
-  const { data: citationRows } = await supabase
+  // Ownership verified above. chunks is no longer publicly readable, so the
+  // embedded fetch is done via the service-role client.
+  const { data: citationRows } = await supabaseService()
     .from('citations')
     .select('rank, chunk:chunk_id ( id, content_ar, start_sec, episode:episode_id ( num, title_ar, guest_name_ar, youtube_id ) )')
     .eq('answer_id', answerId)

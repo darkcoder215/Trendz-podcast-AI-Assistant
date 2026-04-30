@@ -11,18 +11,18 @@ export const revalidate = 60;
 
 async function fetchHomeStats() {
   const supabase = await supabaseServer();
-  const [{ count: epCount }, { count: chunksCount }] = await Promise.all([
-    supabase.from('episodes').select('*', { count: 'exact', head: true }),
-    supabase.from('chunks').select('*', { count: 'exact', head: true }),
+  const [{ data: stats }, { data: recent }] = await Promise.all([
+    supabase.rpc('fn_public_stats'),
+    supabase
+      .from('episodes')
+      .select('id, num, title_ar, guest_name_ar, guest_photo_url, duration_sec, summary_ar, topics_ar, youtube_id')
+      .order('num', { ascending: false })
+      .limit(6),
   ]);
-  const { data: recent } = await supabase
-    .from('episodes')
-    .select('id, num, title_ar, guest_name_ar, guest_photo_url, duration_sec, summary_ar, topics_ar, youtube_id')
-    .order('num', { ascending: false })
-    .limit(6);
+  const s = (stats ?? {}) as { episodeCount?: number; chunkCount?: number };
   return {
-    episodeCount: epCount ?? 0,
-    chunkCount: chunksCount ?? 0,
+    episodeCount: s.episodeCount ?? 0,
+    chunkCount: s.chunkCount ?? 0,
     recent: recent ?? [],
   };
 }

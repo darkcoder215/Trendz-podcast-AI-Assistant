@@ -1,5 +1,6 @@
 import { ImageResponse } from 'next/og';
 import { supabaseServer } from '@/lib/supabase/server';
+import { supabaseService } from '@/lib/supabase/service';
 import { fmtTimestamp, timestampedYouTubeUrl } from '@/lib/youtube';
 
 export const runtime = 'nodejs';
@@ -32,7 +33,9 @@ export async function GET(
   if (aErr || !answer) return new Response('not_found', { status: 404 });
   if (answer.user_id !== user.id) return new Response('forbidden', { status: 403 });
 
-  const { data: citationRows } = await supabase
+  // Ownership verified above. chunks is locked behind RLS so the embedded
+  // chunk/episode fetch is done via the service-role client.
+  const { data: citationRows } = await supabaseService()
     .from('citations')
     .select('rank, chunk:chunk_id ( id, content_ar, start_sec, episode:episode_id ( num, title_ar, guest_name_ar, youtube_id ) )')
     .eq('answer_id', answerId)
