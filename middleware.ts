@@ -6,35 +6,34 @@ type CookieToSet = { name: string; value: string; options: CookieOptions };
 /**
  * Refresh the Supabase session cookie on every request and bootstrap an
  * anonymous session for first-time visitors so the Ask flow is usable
- * without login. Admin-gated routes are additionally checked by the
- * /settings layout.
+ * without login. Wrapped in a top-level try/catch so a transient Supabase
+ * error never tanks the whole request with a Vercel
+ * MIDDLEWARE_INVOCATION_FAILED 500.
  */
 export async function middleware(req: NextRequest) {
-  const res = NextResponse.next({ request: req });
-
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-  // If the env isn't configured yet (e.g. misconfigured Vercel deployment),
-  // don't take the whole site down — pass the request through. Routes that
-  // strictly need Supabase will fail loudly with their own 500; public pages
-  // keep rendering.
-  if (!url || !anonKey) {
-    if (process.env.NODE_ENV !== 'production') {
-      console.warn('[middleware] Supabase env vars missing — skipping session refresh');
-    }
-    return res;
-  }
-
   try {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    // Env not configured (misconfigured env in Vercel, etc) — keep serving.
+    if (!url || !anonKey) {
+      return NextResponse.next();
+    }
+
+    // Canonical Next 15 + @supabase/ssr pattern: the response is rebuilt on
+    // every cookie write so the rest of the request pipeline sees the
+    // refreshed session.
+    let response = NextResponse.next({ request: req });
+
     const supabase = createServerClient(url, anonKey, {
       cookies: {
         getAll: () => req.cookies.getAll(),
         setAll: (list: CookieToSet[]) => {
-          list.forEach(({ name, value, options }) => {
-            req.cookies.set(name, value);
-            res.cookies.set(name, value, options);
-          });
+          list.forEach(({ name, value }) => req.cookies.set(name, value));
+          response = NextResponse.next({ request: req });
+          list.forEach(({ name, value, options }) =>
+            response.cookies.set(name, value, options),
+          );
         },
       },
     });
@@ -45,20 +44,27 @@ export async function middleware(req: NextRequest) {
     } = await supabase.auth.getUser();
 
     // For public routes, silently create an anonymous session if none.
-    // Skip for admin / API / static paths to avoid creating sessions on scraper hits.
-    const { pathname } = req.nextUrl;
-    const isPublicUi =
-      pathname === '/' || pathname === '/ask' || pathname === '/leaderboard' || pathname.startsWith('/share/');
-
-    if (!user && isPublicUi) {
-      await supabase.auth.signInAnonymously().catch(() => undefined);
+    // Skip for admin / API / static paths to avoid sessions on scraper hits.
+    if (!user) {
+      const { pathname } = req.nextUrl;
+      const isPublicUi =
+        pathname === '/' ||
+        pathname === '/ask' ||
+        pathname === '/leaderboard' ||
+        pathname.startsWith('/share/');
+      if (isPublicUi) {
+        await supabase.auth.signInAnonymously().catch(() => undefined);
+      }
     }
-  } catch (err) {
-    // Never crash the middleware — it runs on every request. Log and continue.
-    console.error('[middleware] supabase error', err);
-  }
 
-  return res;
+    return response;
+  } catch (err) {
+    // Never crash the middleware — it runs on every request. Log and pass
+    // the request through; the page or API route will fail loudly if it
+    // genuinely needs Supabase and Supabase is unreachable.
+    console.error('[middleware] failed', err);
+    return NextResponse.next();
+  }
 }
 
 export const config = {
